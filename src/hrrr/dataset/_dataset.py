@@ -22,5 +22,10 @@ class hrrr_dataset:
         else:
             raise ValueError(f'You must select latitude or longitude as tude. {tude} is not them.')
 
-        return _tude_list(min_tude, max_tude, length)
+        tude_list = _tude_list(min_tude, max_tude, length)
+        if tude == 'longitude':
+            tude_list = [_val-360 for _val in tude_list]  # convert from 360 degree to 180 degree
+
+        return tude_list
+
 
