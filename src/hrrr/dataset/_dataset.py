@@ -17,7 +17,7 @@ class hrrr_dataset:
             min_tude, max_tude = np.min(np.array(self.ds.latitude)), np.max(np.array(self.ds.latitude))
             length = np.shape(self.ds.t)[0]
         elif tude == 'longitude':
-            min_tude, max_tude = np.min(np.array(self.ds.longitude)), np.max(np.aray(self.ds.longitude))
+            min_tude, max_tude = np.min(np.array(self.ds.longitude)), np.max(np.array(self.ds.longitude))
             length = np.shape(self.ds.t)[1]
         else:
             raise ValueError(f'You must select latitude or longitude as tude. {tude} is not them.')
