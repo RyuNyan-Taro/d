@@ -1,4 +1,5 @@
 import numpy as np
+from .. import file
 
 
 def _tude_list(min_tude, max_tude, length) -> list:
@@ -17,7 +18,7 @@ class hrrr_dataset:
             length = np.shape(self.ds.t[0])
         elif tude == 'longitude':
             min_tude, max_tude = np.min(self.ds.longitude), np.max(self.ds.longitude)
-            length = np.shape(self.ds.t[0])
+            length = np.shape(self.ds.t[1])
         else:
             raise ValueError(f'You must select latitude or longitude as tude. {tude} is not them.')
 
