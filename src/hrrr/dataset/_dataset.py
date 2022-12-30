@@ -14,11 +14,11 @@ class hrrr_dataset:
 
     def tude_range_list(self, tude: str) -> list:
         if tude == 'latitude':
-            min_tude, max_tude = np.min(self.ds.latitude), np.max(self.ds.latitude)
-            length = np.shape(self.ds.t[0])
+            min_tude, max_tude = np.min(np.array(self.ds.latitude)), np.max(np.array(self.ds.latitude))
+            length = np.shape(self.ds.t)[0]
         elif tude == 'longitude':
-            min_tude, max_tude = np.min(self.ds.longitude), np.max(self.ds.longitude)
-            length = np.shape(self.ds.t[1])
+            min_tude, max_tude = np.min(np.array(self.ds.longitude)), np.max(np.aray(self.ds.longitude))
+            length = np.shape(self.ds.t)[1]
         else:
             raise ValueError(f'You must select latitude or longitude as tude. {tude} is not them.')
 
