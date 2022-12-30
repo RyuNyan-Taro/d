@@ -34,7 +34,6 @@ def hrrr_dataset(year: str, month: str, date: str) -> object:
 
     # Let's grab surface temperature `TMP:surface`.
     sfc_temp_idx = [l for l in idx if ":TMP:surface" in l][0].split(":")
-    print("Surface temp line:", sfc_temp_idx)
 
     # Pluck the byte offset from this line, plus the beginning offset of the next line
     line_num = int(sfc_temp_idx[0])
