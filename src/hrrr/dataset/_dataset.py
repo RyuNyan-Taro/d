@@ -9,8 +9,8 @@ def _tude_list(min_tude, max_tude, length) -> list:
 
 
 class hrrr_dataset:
-    def __init__(self, ds):
-        self.ds = ds
+    def __init__(self, year, month, date):
+        self.ds = file.hrrr_dataset(year, month, date)
 
     def tude_range_list(self, tude: str) -> list:
         if tude == 'latitude':
