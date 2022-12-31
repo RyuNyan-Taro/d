@@ -12,7 +12,7 @@ class hrrr_dataset:
     def __init__(self, year, month, date):
         self.ds = file.hrrr_dataset(year, month, date)
 
-    def tude_range_list(self, tude: str) -> list:
+    def tude_range_array(self, tude: str) -> np.array:
         if tude == 'latitude':
             min_tude, max_tude = np.min(np.array(self.ds.latitude)), np.max(np.array(self.ds.latitude))
             length = np.shape(self.ds.t)[0]
@@ -26,6 +26,8 @@ class hrrr_dataset:
         if tude == 'longitude':
             tude_list = [_val-360 for _val in tude_list]  # convert from 360 degree to 180 degree
 
-        return tude_list
+        return np.array(tude_list)
+
+
 
 
