@@ -28,6 +28,19 @@ class hrrr_dataset:
 
         return np.array(tude_list)
 
+    def range_temp(self, min_latitude, max_latitude, min_longitude, max_longitude):
+        temp_array = self.ds.t[::-1]
+        latitude_array = self.tude_range_array(self, 'latitude')
+        longitude_array = self.tude_range_array(self, 'longitude')[::-1]
+
+        latitude_cond = np.logical_and(latitude_array >= min_latitude, latitude_array <= max_latitude)
+        longitude_cond = np.logical_and(longitude_array >= min_longitude, longitude_array <= max_longitude)
+
+        return temp_array[latitude_cond][longitude_cond]
+
+
+
+
 
 
 
