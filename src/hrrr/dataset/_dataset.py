@@ -1,6 +1,8 @@
 import numpy as np
 from .. import file
 
+from .._config import *
+
 
 def _tude_list(min_tude, max_tude, length) -> list:
     delta_tude = (max_tude-min_tude) / (length-1)
@@ -31,7 +33,8 @@ class hrrr_dataset:
 
         return np.array(tude_list)
 
-    def range_temp(self, min_latitude: float, max_latitude: float, min_longitude: float, max_longitude: float):
+    def range_temp(self, min_latitude: float, max_latitude: float,
+                   min_longitude: float, max_longitude: float) -> np.array:
         """
         Return temperature array in range of min and max latitude and longitude.
 
@@ -57,6 +60,15 @@ class hrrr_dataset:
         longitude_cond = np.logical_and(longitude_array >= min_longitude, longitude_array <= max_longitude)
 
         return np.array([_val_array[longitude_cond] for _val_array in temp_array[latitude_cond]])
+
+    def delta_range_temp(self, center_latitude: float, center_longitude: float,
+                         times_latitude: float, times_longitude: float) -> np.array:
+
+        return self.range_temp(center_latitude-DELTA_LATITUDE*times_latitude,
+                               center_latitude+DELTA_LATITUDE*times_latitude,
+                               center_longitude - DELTA_LONGITUDE * times_longitude,
+                               center_longitude + DELTA_LONGITUDE * times_longitude)
+
 
 
 
