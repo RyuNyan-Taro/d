@@ -9,6 +9,9 @@ def _tude_list(min_tude, max_tude, length) -> list:
 
 
 class hrrr_dataset:
+    """
+    Dataset of hrrr at selected year, month and date
+    """
     def __init__(self, year, month, date):
         self.ds = file.hrrr_dataset(year, month, date)
 
@@ -28,15 +31,32 @@ class hrrr_dataset:
 
         return np.array(tude_list)
 
-    def range_temp(self, min_latitude, max_latitude, min_longitude, max_longitude):
-        temp_array = self.ds.t[::-1]
-        latitude_array = self.tude_range_array(self, 'latitude')
-        longitude_array = self.tude_range_array(self, 'longitude')[::-1]
+    def range_temp(self, min_latitude: float, max_latitude: float, min_longitude: float, max_longitude: float):
+        """
+        Return temperature array in range of min and max latitude and longitude.
+
+        Parameters
+        ----------
+        min_latitude, max_latitude, min_longitude, max_longitude: float
+            Latitude and longitude range to return temperature.
+
+        Returns
+        -------
+        range_temp_array: 1D array
+            Temperatures in the latitude and longitude range.
+        """
+
+        if np.logical_or(min_latitude > max_latitude, min_longitude > max_longitude):
+            raise ValueError('You must select max value greater than min value.')
+
+        temp_array = np.array(self.ds.t[::-1])
+        latitude_array = self.tude_range_array('latitude')[::-1]
+        longitude_array = self.tude_range_array('longitude')
 
         latitude_cond = np.logical_and(latitude_array >= min_latitude, latitude_array <= max_latitude)
         longitude_cond = np.logical_and(longitude_array >= min_longitude, longitude_array <= max_longitude)
 
-        return temp_array[latitude_cond][longitude_cond]
+        return np.array([_val_array[longitude_cond] for _val_array in temp_array[latitude_cond]])
 
 
 
