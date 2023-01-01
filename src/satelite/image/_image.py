@@ -120,6 +120,7 @@ def select_best_item(items, date, latitude, longitude):
     if len(item_details) == 0:
         return np.nan, np.nan, np.nan
 
+    print(item_details)
     # add time difference between each item and the sample
     item_details["time_diff"] = pd.to_datetime(date) - pd.to_datetime(
         item_details["datetime"]
@@ -135,7 +136,7 @@ def select_best_item(items, date, latitude, longitude):
     # return the closest imagery by time
     best_item = item_details.sort_values(by="time_diff", ascending=True).iloc[0]
 
-    return best_item["item_obj"], best_item["platform"], best_item["datetime"]
+    return item_details, best_item["item_obj"], best_item["platform"], best_item["datetime"]
 
 
 def image_to_features(image_array):
