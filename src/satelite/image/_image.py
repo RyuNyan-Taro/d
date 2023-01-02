@@ -136,13 +136,17 @@ def select_best_item(items, date, latitude, longitude):
 
         # Is there water cell in sentinel?
         # ref: https://docs.sentinel-hub.com/api/latest/data/sentinel-2-l2a/#units
-        item_details['scl_water'] = [6 in collections.Counter(np.ravel(_scl_array)).keys()
-                                     for _scl_array
-                                     in [crop_sentinel_image(_item, feature_bbox, col_name='SCL')
-                                     for _item in item_details.item_obj]]
-        if np.sum(item_details['scl_water']) >= 1:
-            print('water')
-            item_details = item_details[item_details["scl_water"] == True]
+        try:
+            item_details['scl_water'] = [6 in collections.Counter(np.ravel(_scl_array)).keys()
+                                         for _scl_array
+                                         in [crop_sentinel_image(_item, feature_bbox, col_name='SCL')
+                                         for _item in item_details.item_obj]]
+            if np.sum(item_details['scl_water']) >= 1:
+                print('water')
+                item_details = item_details[item_details["scl_water"] == True]
+        except Exception:
+            print('scl_water error')
+
 
     # return the closest imagery by time
     best_item = item_details.sort_values(by="time_diff", ascending=True).iloc[0]
