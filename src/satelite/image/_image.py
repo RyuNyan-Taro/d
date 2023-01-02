@@ -6,10 +6,11 @@ import planetary_computer as pc
 import odc.stac
 import rioxarray
 import cv2
+import collections
 
 
 # get our bounding box to search latitude and longitude coordinates
-def get_bounding_box(latitude, longitude, meter_buffer=50000):
+def get_bounding_box(latitude, longitude, meter_buffer=3000):
     """
     Given a latitude, longitude, and buffer in meters, returns a bounding
     box around the point with the buffer on the left, right, top, and bottom.
@@ -42,7 +43,7 @@ def get_date_range(date, time_buffer_days=15):
     return date_range
 
 
-def crop_sentinel_image(item, bounding_box):
+def crop_sentinel_image(item, bounding_box, col_name='visual'):
     """
     Given a STAC item from Sentinel-2 and a bounding box tuple in the format
     (minx, miny, maxx, maxy), return a cropped portion of the item's visual
@@ -52,7 +53,7 @@ def crop_sentinel_image(item, bounding_box):
     """
     (minx, miny, maxx, maxy) = bounding_box
 
-    image = rioxarray.open_rasterio(pc.sign(item.assets["visual"].href)).rio.clip_box(
+    image = rioxarray.open_rasterio(pc.sign(item.assets[col_name].href)).rio.clip_box(
         minx=minx,
         miny=miny,
         maxx=maxx,
@@ -63,7 +64,7 @@ def crop_sentinel_image(item, bounding_box):
     return image.to_numpy()
 
 
-def crop_landsat_image(item, bounding_box):
+def crop_landsat_image(item, bounding_box, bands_list: list = ["red", "green", "blue"]):
     """
     Given a STAC item from Landsat and a bounding box tuple in the format
     (minx, miny, maxx, maxy), return a cropped portion of the item's visual
@@ -74,9 +75,9 @@ def crop_landsat_image(item, bounding_box):
     (minx, miny, maxx, maxy) = bounding_box
 
     image = odc.stac.stac_load(
-        [pc.sign(item)], bands=["red", "green", "blue"], bbox=[minx, miny, maxx, maxy]
+        [pc.sign(item)], bands=bands_list, bbox=[minx, miny, maxx, maxy]
     ).isel(time=0)
-    image_array = image[["red", "green", "blue"]].to_array().to_numpy()
+    image_array = image[bands_list].to_array().to_numpy()
 
     # normalize to 0 - 255 values
     image_array = cv2.normalize(image_array, None, 0, 255, cv2.NORM_MINMAX)
@@ -120,7 +121,6 @@ def select_best_item(items, date, latitude, longitude):
     if len(item_details) == 0:
         return np.nan, np.nan, np.nan
 
-    print(item_details)
     # add time difference between each item and the sample
     item_details["time_diff"] = pd.to_datetime(date) - pd.to_datetime(
         item_details["datetime"]
@@ -132,6 +132,17 @@ def select_best_item(items, date, latitude, longitude):
     )
     if item_details["sentinel"].any():
         item_details = item_details[item_details["sentinel"] == True]
+        feature_bbox = get_bounding_box(latitude, longitude, meter_buffer=200)
+
+        # Is there water cell in sentinel?
+        # ref: https://docs.sentinel-hub.com/api/latest/data/sentinel-2-l2a/#units
+        item_details['scl_water'] = [6 in collections.Counter(np.ravel(_scl_array)).keys()
+                                     for _scl_array
+                                     in [crop_sentinel_image(_item, feature_bbox, col_name='SCL')
+                                     for _item in item_details.item_obj]]
+        if np.sum(item_details['scl_water']) >= 1:
+            print('water')
+            item_details = item_details[item_details["scl_water"] == True]
 
     # return the closest imagery by time
     best_item = item_details.sort_values(by="time_diff", ascending=True).iloc[0]
