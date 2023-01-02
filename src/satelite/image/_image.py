@@ -142,7 +142,6 @@ def select_best_item(items, date, latitude, longitude):
                                          in [crop_sentinel_image(_item, feature_bbox, col_name='SCL')
                                          for _item in item_details.item_obj]]
             if np.sum(item_details['scl_water']) >= 1:
-                print('water')
                 item_details = item_details[item_details["scl_water"] == True]
         except Exception:
             print('scl_water error')
