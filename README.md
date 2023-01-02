@@ -11,6 +11,13 @@ https://www.drivendata.org/competitions/143/tick-tick-bloom/
   - Lower resolution, but the data has temperature band in assets.
 ## hrrr
 - There is no data of hrrr -> reply to topic which has same problem.
+# Submissions score
+## 1.5672 -> 1.5505
+### modified
+- if SCL has water(number==6), it choice as training image.
+- The result higher than benchmark score, 1.5641.
+
+
 # Ref
 satellite: https://drivendata.co/blog/tick-tick-bloom-benchmark
 
