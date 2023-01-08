@@ -5,6 +5,8 @@ https://www.drivendata.org/competitions/143/tick-tick-bloom/
 # Record
 ## satellite
 - Two type of satellite image and these have different assets -> some patterns are required to select best image to calculate features.
+- The center of spot has no water region at some data
+- New method require over 24 hours to finish all process
 - sentinel
   - SCL has cell type(water, cloud, etc.) -> but the size is not equals to image size. So simply condition and filter don't act. How to resize?
 - landset
