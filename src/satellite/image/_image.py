@@ -1,54 +1,9 @@
 import numpy as np
 import pandas as pd
-import planetary_computer as pc
-import odc.stac
-import rioxarray
-import cv2
 import collections
 
 from .. import tools
-
-
-def crop_sentinel_image(item, bounding_box, col_name='visual'):
-    """
-    Given a STAC item from Sentinel-2 and a bounding box tuple in the format
-    (minx, miny, maxx, maxy), return a cropped portion of the item's visual
-    imagery in the bounding box.
-
-    Returns the image as a numpy array with dimensions (color band, height, width)
-    """
-    (minx, miny, maxx, maxy) = bounding_box
-
-    image = rioxarray.open_rasterio(pc.sign(item.assets[col_name].href)).rio.clip_box(
-        minx=minx,
-        miny=miny,
-        maxx=maxx,
-        maxy=maxy,
-        crs="EPSG:4326",
-    )
-
-    return image.to_numpy()
-
-
-def crop_landsat_image(item, bounding_box, bands_list: list = ["red", "green", "blue"]):
-    """
-    Given a STAC item from Landsat and a bounding box tuple in the format
-    (minx, miny, maxx, maxy), return a cropped portion of the item's visual
-    imagery in the bounding box.
-
-    Returns the image as a numpy array with dimensions (color band, height, width)
-    """
-    (minx, miny, maxx, maxy) = bounding_box
-
-    image = odc.stac.stac_load(
-        [pc.sign(item)], bands=bands_list, bbox=[minx, miny, maxx, maxy]
-    ).isel(time=0)
-    image_array = image[bands_list].to_array().to_numpy()
-
-    # normalize to 0 - 255 values
-    image_array = cv2.normalize(image_array, None, 0, 255, cv2.NORM_MINMAX)
-
-    return image_array
+from . import crop
 
 
 # Refactor our process from above into functions
@@ -105,13 +60,12 @@ def select_best_item(items, date, latitude, longitude):
         try:
             item_details['scl_water'] = [6 in collections.Counter(np.ravel(_scl_array)).keys()
                                          for _scl_array
-                                         in [crop_sentinel_image(_item, feature_bbox, col_name='SCL')
+                                         in [crop.crop_sentinel_image(_item, feature_bbox, col_name='SCL')
                                          for _item in item_details.item_obj]]
             if np.sum(item_details['scl_water']) >= 1:
                 item_details = item_details[item_details["scl_water"] == True]
         except Exception:
             print('scl_water error')
-
 
     # return the closest imagery by time
     best_item = item_details.sort_values(by="time_diff", ascending=True).iloc[0]
