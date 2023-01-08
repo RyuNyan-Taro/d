@@ -46,14 +46,13 @@ def water_bool(item: pystac.item.Item,  bounding_box: list) -> bool:
     """
 
     _platform = item.properties['platform']
-    print(_platform)
     if 'sentinel' in _platform.lower():
         try:
             class_array = crop.crop_sentinel_image(item, bounding_box, col_name='SCL')[0]
         except:
             return False
         water_num = 6
-    elif _platform == 'landsat_7':
+    elif _platform == 'landsat-7':
         try:
             class_array = crop.crop_sentinel_image(item, bounding_box, col_name='cloud_qa')[0]
         except:
