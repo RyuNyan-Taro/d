@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def resize_array(base_array: np.array, resize_len: int) -> np.ndarray:
+def twice_len_array(base_array: np.ndarray, resize_len: int) -> np.ndarray:
     """
-    Return resized 2D array of resize_len x resize_len
+    Return twice 2D array of resize_len x resize_len
     Parameters
     ----------
     base_array : np.array
