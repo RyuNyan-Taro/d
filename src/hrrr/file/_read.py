@@ -1,5 +1,6 @@
 import requests
 import tempfile
+import cfgrib
 import xarray as xr
 
 """
@@ -8,12 +9,15 @@ ref: https://nbviewer.org/github/microsoft/AIforEarthDataSets/blob/main/data/noa
 """
 
 
-def create_url(year: str, month: str, date: str, container: str = "windows") -> str:
+def create_url(year: str, month: str, date: str, container: str = "windows", sector: str = "conus") -> str:
     """Create url of hrrr"""
 
     container_dict = {"windows": "https://noaahrrr.blob.core.windows.net/hrrr", "aws": "https://noaa-hrrr-bdp-pds.s3.amazonaws.com"}
+    sector_list = ["conus", "alaska"]
+    product_dict = {"windows": "wrfsfcf", "aws": "wrfprsf"}
+    if sector not in sector_list:
+        raise ValueError(f'{sector} is not in {sector_list}')
     container_url = container_dict[container]
-    sector = "conus"
     cycle = 12          # noon
     forecast_hour = 1   # offset from cycle time
     product = "wrfsfcf" # 2D surface levels
@@ -25,8 +29,8 @@ def create_url(year: str, month: str, date: str, container: str = "windows") -> 
     return url
 
 
-def hrrr_dataset(year: str, month: str, date: str, container: str = "windows") -> object:
-    url = create_url(year, month, date, container=container)
+def hrrr_dataset(year: str, month: str, date: str, container: str = "windows", sector: str = "conus") -> object:
+    url = create_url(year, month, date, container=container, sector=sector)
     # Fetch the idx file by appending the .idx file extension to our already formatted URL
     r = requests.get(f"{url}.idx")
     idx = r.text.splitlines()
