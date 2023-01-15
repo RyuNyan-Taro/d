@@ -36,7 +36,7 @@ def hrrr_dataset(year: str, month: str, date: str, container: str = "windows", s
     r = requests.get(f"{url}.idx")
     idx = r.text.splitlines()
 
-    # You can see it has a 1-indexed base line number, staring byte position, date, variable, atmosphere level,
+    # You can see it has a 1-indexed baseline number, staring byte position, date, variable, atmosphere level,
     # and forecast description. The lines are colon-delimited.
 
     # Let's grab surface temperature `TMP:surface`.
