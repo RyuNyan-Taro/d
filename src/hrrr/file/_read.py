@@ -8,9 +8,11 @@ ref: https://nbviewer.org/github/microsoft/AIforEarthDataSets/blob/main/data/noa
 """
 
 
-def create_url(year: str, month: str, date: str) -> str:
+def create_url(year: str, month: str, date: str, container: str = "windows") -> str:
     """Create url of hrrr"""
-    blob_container = "https://noaahrrr.blob.core.windows.net/hrrr"
+
+    container_dict = {"windows": "https://noaahrrr.blob.core.windows.net/hrrr", "aws": "https://noaa-hrrr-bdp-pds.s3.amazonaws.com"}
+    container_url = container_dict[container]
     sector = "conus"
     cycle = 12          # noon
     forecast_hour = 1   # offset from cycle time
@@ -18,13 +20,13 @@ def create_url(year: str, month: str, date: str) -> str:
 
     # Put it all together
     file_path = f"hrrr.t{cycle:02}z.{product}{forecast_hour:02}.grib2"
-    url = f"{blob_container}/hrrr.{year+month+date}/{sector}/{file_path}"
+    url = f"{container_url}/hrrr.{year+month+date}/{sector}/{file_path}"
 
     return url
 
 
-def hrrr_dataset(year: str, month: str, date: str) -> object:
-    url = create_url(year, month, date)
+def hrrr_dataset(year: str, month: str, date: str, container: str = "windows") -> object:
+    url = create_url(year, month, date, container=container)
     # Fetch the idx file by appending the .idx file extension to our already formatted URL
     r = requests.get(f"{url}.idx")
     idx = r.text.splitlines()

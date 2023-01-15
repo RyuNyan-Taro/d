@@ -14,8 +14,8 @@ class hrrr_dataset:
     """
     Dataset of hrrr at selected year, month and date
     """
-    def __init__(self, year, month, date):
-        self.ds = file.hrrr_dataset(year, month, date)
+    def __init__(self, year, month, date, container):
+        self.ds = file.hrrr_dataset(year, month, date, container=container)
 
     def tude_range_array(self, tude: str) -> np.array:
         if tude == 'latitude':
