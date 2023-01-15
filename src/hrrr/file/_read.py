@@ -25,6 +25,7 @@ def create_url(year: str, month: str, date: str, container: str = "windows", sec
     # Put it all together
     file_path = f"hrrr.t{cycle:02}z.{product}{forecast_hour:02}.grib2"
     url = f"{container_url}/hrrr.{year+month+date}/{sector}/{file_path}"
+    print(url)
 
     return url
 
