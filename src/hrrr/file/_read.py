@@ -20,7 +20,7 @@ def create_url(year: str, month: str, date: str, container: str = "windows", sec
     container_url = container_dict[container]
     cycle = 12          # noon
     forecast_hour = 1   # offset from cycle time
-    product = "wrfsfcf" # 2D surface levels
+    product = product_dict[container]  # windows: 2D surface, aws: 3D pressure
 
     # Put it all together
     file_path = f"hrrr.t{cycle:02}z.{product}{forecast_hour:02}.grib2"
